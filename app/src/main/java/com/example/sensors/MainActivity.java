@@ -1,5 +1,6 @@
 package com.example.sensors;
 
+import android.app.ActivityManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import java.util.List;
@@ -33,6 +34,11 @@ public class MainActivity extends Activity {
         sensorManager.unregisterListener(listenerLight, sensorLight);
         StringBuilder sb = new StringBuilder();
 
+        // Before doing something that requires a lot of memory,
+        // check to see whether the device is in a low memory state.
+        ActivityManager.MemoryInfo memoryInfo = getAvailableMemory();
+
+
         for (Sensor sensor : sensors) {
             sb.append("name = ").append(sensor.getName())
                     .append(", type = ").append(sensor.getType())
@@ -40,9 +46,18 @@ public class MainActivity extends Activity {
                     .append(" ,version = ").append(sensor.getVersion())
                     .append("\nmax = ").append(sensor.getMaximumRange())
                     .append(", resolution = ").append(sensor.getResolution())
+                    .append("\nMEMORY = ").append(memoryInfo.availMem)
                     .append("\n--------------------------------------\n");
         }
         tvText.setText(sb);
+    }
+
+    // Get a MemoryInfo object for the device's current memory status.
+    private ActivityManager.MemoryInfo getAvailableMemory() {
+        ActivityManager activityManager = (ActivityManager) this.getSystemService(ACTIVITY_SERVICE);
+        ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
+        activityManager.getMemoryInfo(memoryInfo);
+        return memoryInfo;
     }
 
     public void onClickSensLight(View v) {
